@@ -1,16 +1,12 @@
-import { usePostCommentMutation } from '@/redux/api/apiSlice';
+import {
+  useGetCommentQuery,
+  usePostCommentMutation,
+} from '@/redux/api/apiSlice';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { FiSend } from 'react-icons/fi';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-
-const dummyComments = [
-  'Bhalo na',
-  'Ki shob ghori egula??',
-  'Eta kono product holo ??',
-  '200 taka dibo, hobe ??',
-];
 
 interface IProps {
   id: string;
@@ -18,7 +14,10 @@ interface IProps {
 
 export default function ProductReview({ id }: IProps) {
   const [inputValue, setInputValue] = useState<string>('');
-
+  const { data: commentData, isLoading } = useGetCommentQuery(id, {
+    refetchOnMountOrArgChange: true,
+    pollingInterval: 30000,
+  });
   // const [postComment, options] = usePostCommentMutation();
   // const { isError, isLoading, isSuccess } = options;
   const [postComment, options] = usePostCommentMutation();
@@ -53,7 +52,7 @@ export default function ProductReview({ id }: IProps) {
         </Button>
       </form>
       <div className="mt-10">
-        {dummyComments.map((comment, index) => (
+        {commentData?.comments?.map((comment: string, index: number) => (
           <div key={index} className="flex gap-3 items-center mb-5">
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
