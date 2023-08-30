@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 interface LoginFormInputs {
@@ -29,13 +29,17 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
   const dispatch = useAppDispatch();
 
   // Redirect When Login
+  
+  const { state } = useLocation();
 
   const { user, isLoading } = useAppSelector(
     (status: { user: any }) => status.user
   );
   const navigate = useNavigate();
   useEffect(() => {
-    if (user.email && !isLoading) {
+    if (state && user.email) {
+      navigate(`${state.path}`);
+    } else if (user.email && !isLoading && !state) {
       navigate('/');
     }
   }, [user.email, isLoading]);
